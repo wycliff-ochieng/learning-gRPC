@@ -21,7 +21,7 @@ func main() {
 
 	c := pb.NewCoffeeShopClient(conn)
 
-	ctx, cancel := context.WithValue(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 
 	defer cancel()
 
@@ -31,6 +31,8 @@ func main() {
 	}
 
 	done := make(chan bool)
+
+	var items []*pb.Items
 
 	go func() {
 		for {
@@ -42,8 +44,11 @@ func main() {
 			if err != nil {
 				log.Fatalf("")
 			}
-			items := resp.Item
+			items = resp.Item
 			log.Printf("Resp is receiced : %v", resp.Item)
 		}
 	}()
+
+	<-done
+	log.Printf("channels is done %v", items)
 }
